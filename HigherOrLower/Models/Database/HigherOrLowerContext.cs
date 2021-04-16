@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Models
 {
-	public class HigherOrLowerContext : DbContext
+	public class HigherOrLowerContext : IdentityDbContext<User>
 	{
 
 		public HigherOrLowerContext(DbContextOptions options) : base(options) { }
@@ -20,6 +21,8 @@ namespace HigherOrLower.Models
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			base.OnModelCreating(builder);
+
 			this.buildKeys(builder);
 			this.buildForeignKeys(builder);
 			this.buildConstaints(builder);

@@ -2,6 +2,7 @@ using HigherOrLower.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,19 +31,19 @@ namespace HigherOrLower
 			services.AddSession();
 			services.AddHttpContextAccessor();
 			services.AddDbContext<HigherOrLowerContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("HigherOrLowerContext")));
+
+			services.AddIdentity<User, IdentityRole>(options => {
+				options.Password.RequiredLength = 6;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequireDigit = false;
+			}).AddEntityFrameworkStores<HigherOrLowerContext>()
+			  .AddDefaultTokenProviders();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-			}
-			else
-			{
-				app.UseHsts();
-			}
+			app.UseDeveloperExceptionPage();
 
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
@@ -50,6 +51,7 @@ namespace HigherOrLower
 			app.UseRouting();
 			app.UseSession();
 
+			app.UseAuthentication();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

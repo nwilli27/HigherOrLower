@@ -1,4 +1,5 @@
 ﻿using HigherOrLower.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Controllers
 {
+	[Authorize]
 	public class GameController : Controller
 	{
 
