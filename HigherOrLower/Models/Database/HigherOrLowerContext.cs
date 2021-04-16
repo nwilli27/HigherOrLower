@@ -28,7 +28,7 @@ namespace HigherOrLower.Models
 
 		private void buildKeys(ModelBuilder builder)
 		{
-			builder.Entity<GamePlayTurn>().HasKey(pt => new { pt.GamePlayId, pt.GameTurnId });
+			builder.Entity<GamePlayTurn>().HasKey(pt => new { pt.GamePlayId, pt.TurnId });
 		}
 
 		private void buildForeignKeys(ModelBuilder builder)

@@ -8,8 +8,8 @@ namespace HigherOrLower.Models
 	public class GamePlayTurn
 	{
 		public int GamePlayId { get; set; }
-		public int GameTurnId { get; set; }
+		public int TurnId { get; set; }
 		public GamePlay GamePlay { get; set; }
-		public Turn GameTurn { get; set; }
+		public Turn Turn { get; set; }
 	}
 }

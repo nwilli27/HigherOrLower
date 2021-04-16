@@ -1,4 +1,5 @@
 ﻿using HigherOrLower.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,31 @@ namespace HigherOrLower.Controllers
 {
 	public class GameController : Controller
 	{
+
+		#region Members
+
+		private IHigherOrLowerDataAccessor data;
+		private IHttpContextAccessor httpCtxAccessor;
+
+		#endregion
+
+		#region Construction
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GameController"/> class.
+		/// </summary>
+		/// <param name="dataAccessor">The data accessor.</param>
+		/// <param name="httpCtx">The HTTP CTX.</param>
+		public GameController(IHigherOrLowerDataAccessor dataAccessor, IHttpContextAccessor httpCtx)
+		{
+			this.data = dataAccessor;
+			this.httpCtxAccessor = httpCtx;
+		}
+
+		#endregion
+
+		#region Actions
+
 		public IActionResult Index() => RedirectToAction("Play");
 
 		public IActionResult Play()
@@ -39,5 +65,8 @@ namespace HigherOrLower.Controllers
 		{
 			return RedirectToAction("Play");
 		}
+
+		#endregion
+
 	}
 }
