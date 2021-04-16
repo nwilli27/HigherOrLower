@@ -26,6 +26,9 @@ namespace HigherOrLower
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddRazorPages();
+			services.AddTransient<IHigherOrLowerDataAccessor, HigherOrLowerDataAccessor>();
+			services.AddSession();
+			services.AddHttpContextAccessor();
 			services.AddDbContext<HigherOrLowerContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("HigherOrLowerContext")));
 		}
 
@@ -45,6 +48,7 @@ namespace HigherOrLower
 			app.UseStaticFiles();
 
 			app.UseRouting();
+			app.UseSession();
 
 			app.UseAuthorization();
 
