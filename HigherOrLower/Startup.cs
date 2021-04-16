@@ -51,6 +51,9 @@ namespace HigherOrLower
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapRazorPages();
+				endpoints.MapControllerRoute(
+					name: "default",
+					pattern: "{controller=Game}/{Action=Index}/{id?}");
 			});
 		}
 	}
