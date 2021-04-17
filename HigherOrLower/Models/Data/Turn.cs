@@ -18,6 +18,7 @@ namespace HigherOrLower.Models
 		public int? GuessTypeId { get; set; }
 		public GuessType GuessType { get; set; }
 		public bool IsGameOver => ActionType?.Type == GameActionType.GameOver || ActionType?.Type == GameActionType.Hold;
+		public bool IsScoreable => !IsGameOver && ActionType?.Type != GameActionType.Start;
 		public bool HasHeld => ActionType?.Type == GameActionType.Hold;
 		public string Result => IsGameOver ? "Game Over" : string.Empty;
 

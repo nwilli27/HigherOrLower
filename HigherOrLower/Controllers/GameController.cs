@@ -60,7 +60,7 @@ namespace HigherOrLower.Controllers
 
 		public async Task<IActionResult> NewGame()
 		{
-			//TODO need to check if game already exists and end it.
+			this.checkToEndPreviousGame();
 			await this.initializeNewGame();
 			return RedirectToAction("Play");
 		}
@@ -111,6 +111,16 @@ namespace HigherOrLower.Controllers
 
 			currentUser.CurrentGamePlayId = gamePlay.GamePlayId;
 			await this.userManager.UpdateAsync(currentUser);
+		}
+
+		private void checkToEndPreviousGame()
+		{
+			var gamePlay = this.getUserCurrentGamePlay().Result;
+
+			if (!gamePlay.IsGameOver)
+			{
+				this.gamePlayDL.HandleHold(gamePlay.GamePlayId, gamePlay.CurrentTurn.ShowingCardId.Value);
+			}
 		}
 
 		#endregion

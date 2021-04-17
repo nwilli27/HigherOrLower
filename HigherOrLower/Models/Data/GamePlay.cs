@@ -18,6 +18,20 @@ namespace HigherOrLower.Models
 		public Turn CurrentTurn => this.Turns?.Last()?.Turn;
 		public bool IsGameOver => this.CurrentTurn.IsGameOver;
 
+		public int CurrentScore => this.Turns.Count(t => t.Turn.IsScoreable);
+
+		public string GetGameStatus()
+		{
+			if (IsGameOver)
+			{
+				return $"Game Over - Final Score: {CurrentScore}";
+			}
+			else
+			{
+				return $"Guess Higher or Lower";
+			}
+		}
+
 		public ICollection<GamePlayTurn> Turns { get; set; }
 
 		public Turn GetInitialTurn()
