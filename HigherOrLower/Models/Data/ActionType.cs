@@ -9,5 +9,6 @@ namespace HigherOrLower.Models
 	{
 		public int ActionTypeId { get; set; }
 		public string Description { get; set; }
+		public GameActionType Type => (GameActionType) ActionTypeId;
 	}
 }

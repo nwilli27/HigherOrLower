@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HigherOrLower.Migrations
 {
-    public partial class intial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -63,18 +63,6 @@ namespace HigherOrLower.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GamePlays",
-                columns: table => new
-                {
-                    GamePlayId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GamePlays", x => x.GamePlayId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GuessTypes",
                 columns: table => new
                 {
@@ -85,21 +73,6 @@ namespace HigherOrLower.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GuessTypes", x => x.GuessTypeId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PlayingCards",
-                columns: table => new
-                {
-                    PlayingCardId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Suit = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Value = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlayingCards", x => x.PlayingCardId);
                 });
 
             migrationBuilder.CreateTable(
@@ -209,15 +182,57 @@ namespace HigherOrLower.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GamePlays",
+                columns: table => new
+                {
+                    GamePlayId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GamePlays", x => x.GamePlayId);
+                    table.ForeignKey(
+                        name: "FK_GamePlays_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayingCards",
+                columns: table => new
+                {
+                    PlayingCardId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Suit = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Value = table.Column<int>(type: "int", nullable: false),
+                    GamePlayId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayingCards", x => x.PlayingCardId);
+                    table.ForeignKey(
+                        name: "FK_PlayingCards_GamePlays_GamePlayId",
+                        column: x => x.GamePlayId,
+                        principalTable: "GamePlays",
+                        principalColumn: "GamePlayId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Turns",
                 columns: table => new
                 {
                     TurnId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ShowingCardId = table.Column<int>(type: "int", nullable: false),
-                    FlippedCardId = table.Column<int>(type: "int", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    ShowingCardId = table.Column<int>(type: "int", nullable: true),
+                    FlippedCardId = table.Column<int>(type: "int", nullable: true),
                     ActionTypeId = table.Column<int>(type: "int", nullable: false),
-                    GuessTypeId = table.Column<int>(type: "int", nullable: false)
+                    GuessTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -277,9 +292,10 @@ namespace HigherOrLower.Migrations
                 columns: new[] { "ActionTypeId", "Description" },
                 values: new object[,]
                 {
-                    { 1, "Continue" },
-                    { 2, "Hold" },
-                    { 3, "Game Over" }
+                    { 1, "Start" },
+                    { 2, "Continue" },
+                    { 3, "Hold" },
+                    { 4, "Game Over" }
                 });
 
             migrationBuilder.InsertData(
@@ -293,68 +309,68 @@ namespace HigherOrLower.Migrations
 
             migrationBuilder.InsertData(
                 table: "PlayingCards",
-                columns: new[] { "PlayingCardId", "Suit", "Type", "Value" },
+                columns: new[] { "PlayingCardId", "GamePlayId", "Suit", "Type", "Value" },
                 values: new object[,]
                 {
-                    { 28, "Clubs", "2", 2 },
-                    { 29, "Clubs", "3", 3 },
-                    { 30, "Clubs", "4", 4 },
-                    { 31, "Clubs", "5", 5 },
-                    { 32, "Clubs", "6", 6 },
-                    { 33, "Clubs", "7", 7 },
-                    { 34, "Clubs", "8", 8 },
-                    { 35, "Clubs", "9", 9 },
-                    { 36, "Clubs", "10", 10 },
-                    { 37, "Clubs", "Jack", 11 },
-                    { 38, "Clubs", "Queen", 12 },
-                    { 41, "Diamonds", "2", 2 },
-                    { 40, "Diamonds", "Ace", 1 },
-                    { 27, "Clubs", "Ace", 1 },
-                    { 42, "Diamonds", "3", 3 },
-                    { 43, "Diamonds", "4", 4 },
-                    { 44, "Diamonds", "5", 5 },
-                    { 45, "Diamonds", "6", 6 },
-                    { 46, "Diamonds", "7", 7 },
-                    { 47, "Diamonds", "8", 8 },
-                    { 48, "Diamonds", "9", 9 },
-                    { 49, "Diamonds", "10", 10 },
-                    { 50, "Diamonds", "Jack", 11 },
-                    { 39, "Clubs", "King", 13 },
-                    { 26, "Hearts", "King", 13 },
-                    { 24, "Hearts", "Jack", 11 },
-                    { 51, "Diamonds", "Queen", 12 },
-                    { 1, "Spades", "Ace", 1 },
-                    { 2, "Spades", "2", 2 },
-                    { 3, "Spades", "3", 3 },
-                    { 4, "Spades", "4", 4 },
-                    { 5, "Spades", "5", 5 },
-                    { 6, "Spades", "6", 6 },
-                    { 7, "Spades", "7", 7 },
-                    { 8, "Spades", "8", 8 },
-                    { 9, "Spades", "9", 9 },
-                    { 10, "Spades", "10", 10 }
+                    { 36, null, "Clubs", "10", 10 },
+                    { 35, null, "Clubs", "9", 9 },
+                    { 34, null, "Clubs", "8", 8 },
+                    { 33, null, "Clubs", "7", 7 },
+                    { 30, null, "Clubs", "4", 4 },
+                    { 31, null, "Clubs", "5", 5 },
+                    { 37, null, "Clubs", "Jack", 11 },
+                    { 29, null, "Clubs", "3", 3 },
+                    { 28, null, "Clubs", "2", 2 },
+                    { 32, null, "Clubs", "6", 6 },
+                    { 38, null, "Clubs", "Queen", 12 },
+                    { 41, null, "Diamonds", "2", 2 },
+                    { 40, null, "Diamonds", "Ace", 1 },
+                    { 27, null, "Clubs", "Ace", 1 },
+                    { 42, null, "Diamonds", "3", 3 },
+                    { 43, null, "Diamonds", "4", 4 },
+                    { 44, null, "Diamonds", "5", 5 },
+                    { 45, null, "Diamonds", "6", 6 },
+                    { 46, null, "Diamonds", "7", 7 },
+                    { 47, null, "Diamonds", "8", 8 },
+                    { 48, null, "Diamonds", "9", 9 },
+                    { 49, null, "Diamonds", "10", 10 },
+                    { 50, null, "Diamonds", "Jack", 11 },
+                    { 39, null, "Clubs", "King", 13 },
+                    { 26, null, "Hearts", "King", 13 },
+                    { 23, null, "Hearts", "10", 10 },
+                    { 24, null, "Hearts", "Jack", 11 },
+                    { 1, null, "Spades", "Ace", 1 },
+                    { 2, null, "Spades", "2", 2 },
+                    { 3, null, "Spades", "3", 3 },
+                    { 4, null, "Spades", "4", 4 },
+                    { 5, null, "Spades", "5", 5 },
+                    { 6, null, "Spades", "6", 6 },
+                    { 7, null, "Spades", "7", 7 },
+                    { 8, null, "Spades", "8", 8 },
+                    { 9, null, "Spades", "9", 9 }
                 });
 
             migrationBuilder.InsertData(
                 table: "PlayingCards",
-                columns: new[] { "PlayingCardId", "Suit", "Type", "Value" },
+                columns: new[] { "PlayingCardId", "GamePlayId", "Suit", "Type", "Value" },
                 values: new object[,]
                 {
-                    { 11, "Spades", "Jack", 11 },
-                    { 12, "Spades", "Queen", 12 },
-                    { 13, "Spades", "King", 13 },
-                    { 14, "Hearts", "Ace", 1 },
-                    { 15, "Hearts", "2", 2 },
-                    { 16, "Hearts", "3", 3 },
-                    { 17, "Hearts", "4", 4 },
-                    { 18, "Hearts", "5", 5 },
-                    { 19, "Hearts", "6", 6 },
-                    { 20, "Hearts", "7", 7 },
-                    { 21, "Hearts", "8", 8 },
-                    { 22, "Hearts", "9", 9 },
-                    { 23, "Hearts", "10", 10 },
-                    { 25, "Hearts", "Queen", 12 },
-                    { 52, "Diamonds", "King", 13 }
+                    { 10, null, "Spades", "10", 10 },
+                    { 11, null, "Spades", "Jack", 11 },
+                    { 12, null, "Spades", "Queen", 12 },
+                    { 13, null, "Spades", "King", 13 },
+                    { 14, null, "Hearts", "Ace", 1 },
+                    { 15, null, "Hearts", "2", 2 },
+                    { 16, null, "Hearts", "3", 3 },
+                    { 17, null, "Hearts", "4", 4 },
+                    { 18, null, "Hearts", "5", 5 },
+                    { 19, null, "Hearts", "6", 6 },
+                    { 20, null, "Hearts", "7", 7 },
+                    { 21, null, "Hearts", "8", 8 },
+                    { 22, null, "Hearts", "9", 9 },
+                    { 51, null, "Diamonds", "Queen", 12 },
+                    { 25, null, "Hearts", "Queen", 12 },
+                    { 52, null, "Diamonds", "King", 13 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -397,9 +413,19 @@ namespace HigherOrLower.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GamePlays_UserId",
+                table: "GamePlays",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GamePlayTurns_TurnId",
                 table: "GamePlayTurns",
                 column: "TurnId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayingCards_GamePlayId",
+                table: "PlayingCards",
+                column: "GamePlayId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Turns_ActionTypeId",
@@ -446,12 +472,6 @@ namespace HigherOrLower.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "GamePlays");
-
-            migrationBuilder.DropTable(
                 name: "Turns");
 
             migrationBuilder.DropTable(
@@ -462,6 +482,12 @@ namespace HigherOrLower.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlayingCards");
+
+            migrationBuilder.DropTable(
+                name: "GamePlays");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

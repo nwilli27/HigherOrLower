@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HigherOrLower.Migrations
 {
     [DbContext(typeof(HigherOrLowerContext))]
-    [Migration("20210416222236_intial")]
-    partial class intial
+    [Migration("20210417170539_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,16 +39,21 @@ namespace HigherOrLower.Migrations
                         new
                         {
                             ActionTypeId = 1,
-                            Description = "Continue"
+                            Description = "Start"
                         },
                         new
                         {
                             ActionTypeId = 2,
-                            Description = "Hold"
+                            Description = "Continue"
                         },
                         new
                         {
                             ActionTypeId = 3,
+                            Description = "Hold"
+                        },
+                        new
+                        {
+                            ActionTypeId = 4,
                             Description = "Game Over"
                         });
                 });
@@ -60,7 +65,12 @@ namespace HigherOrLower.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("GamePlayId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("GamePlays");
                 });
@@ -114,6 +124,9 @@ namespace HigherOrLower.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("GamePlayId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Suit")
                         .HasColumnType("nvarchar(max)");
 
@@ -124,6 +137,8 @@ namespace HigherOrLower.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("PlayingCardId");
+
+                    b.HasIndex("GamePlayId");
 
                     b.ToTable("PlayingCards");
 
@@ -504,13 +519,16 @@ namespace HigherOrLower.Migrations
                     b.Property<int>("ActionTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("FlippedCardId")
+                    b.Property<int?>("FlippedCardId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GuessTypeId")
+                    b.Property<int?>("GuessTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ShowingCardId")
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShowingCardId")
                         .HasColumnType("int");
 
                     b.HasKey("TurnId");
@@ -731,6 +749,15 @@ namespace HigherOrLower.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("HigherOrLower.Models.GamePlay", b =>
+                {
+                    b.HasOne("HigherOrLower.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HigherOrLower.Models.GamePlayTurn", b =>
                 {
                     b.HasOne("HigherOrLower.Models.GamePlay", "GamePlay")
@@ -750,6 +777,13 @@ namespace HigherOrLower.Migrations
                     b.Navigation("Turn");
                 });
 
+            modelBuilder.Entity("HigherOrLower.Models.PlayingCard", b =>
+                {
+                    b.HasOne("HigherOrLower.Models.GamePlay", null)
+                        .WithMany("PulledCards")
+                        .HasForeignKey("GamePlayId");
+                });
+
             modelBuilder.Entity("HigherOrLower.Models.Turn", b =>
                 {
                     b.HasOne("HigherOrLower.Models.ActionType", "ActionType")
@@ -761,20 +795,17 @@ namespace HigherOrLower.Migrations
                     b.HasOne("HigherOrLower.Models.PlayingCard", "FlippedCard")
                         .WithMany()
                         .HasForeignKey("FlippedCardId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HigherOrLower.Models.GuessType", "GuessType")
                         .WithMany()
                         .HasForeignKey("GuessTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HigherOrLower.Models.PlayingCard", "ShowingCard")
                         .WithMany()
                         .HasForeignKey("ShowingCardId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ActionType");
 
@@ -838,6 +869,8 @@ namespace HigherOrLower.Migrations
 
             modelBuilder.Entity("HigherOrLower.Models.GamePlay", b =>
                 {
+                    b.Navigation("PulledCards");
+
                     b.Navigation("Turns");
                 });
 #pragma warning restore 612, 618
