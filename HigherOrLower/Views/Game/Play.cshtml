@@ -11,36 +11,57 @@
         Once the game starts, the top card is flipped over and its your objective
         to guess whether the next card will be higher or lower than the showing card.
         The game continues until you guess wrong or choose to hold (quit).
-        Rules to mention; if the next card flipped is the same value then the 
+        Rules to mention; if the next card flipped is the same value then the
         game is over and ace cards have a value of 1.
     </div>
     <a asp-action="NewGame" class="btn btn-success mt-2">Start New Game</a>
 </div>
 
-<div class="row mt-3">
-    <div class="col">
-        <h2 class="text-center">Section Header</h2>
-        <div class="bg-dark rounded pt-5 pb-5 mb-2">
-            <img src="@Model.GetPlayingCardImagePath(new PlayingCard() { Suit = "Hearts", Type = "King" })" alt="" class="img-fluid bg-dark mx-auto d-block rounded w-auto">
-        </div>
-        <div class="text-center">
-            <div class="btn-group mt-3 pl-5 pr-5" style="width: 100%">
-                <a asp-action="Lower" class="btn btn-danger btn-lg p-2 float-left"><span class="fas fa-arrow-down"></span> Lower</a>
-                <a asp-action="Hold" class="btn btn-primary btn-lg float-right"><span class="fas fa-hand-paper"></span> Hold</a>
-                <a asp-action="Higher" class="btn btn-success btn-lg"><span class="fas fa-arrow-up"></span> Higher</a>
+@if (Model.GamePlay != null)
+{
+    <div class="row mt-3">
+        <div class="col">
+            <h2 class="text-center">Section Header</h2>
+            <div class="bg-dark rounded pt-5 pb-5 mb-2">
+                <img src="@Model.GetPlayingCardImagePath(Model.GamePlay)" alt="" class="img-fluid bg-dark mx-auto d-block rounded w-auto">
+            </div>
+            <div class="text-center">
+                <div class="btn-group mt-3 pl-5 pr-5" style="width: 100%">
+                    <a asp-action="Lower"
+                       asp-route-gamePlayId="@Model.GamePlay?.GamePlayId" 
+                       asp-route-showingCardId="@Model.GamePlay?.CurrentTurn.FlippedCardId" class="btn btn-danger btn-lg p-2 float-left"><span class="fas fa-arrow-down"></span> Lower</a>
+                    <a asp-action="Hold"
+                       asp-route-gamePlayId="@Model.GamePlay?.GamePlayId" 
+                       asp-route-showingCardId="@Model.GamePlay?.CurrentTurn.FlippedCardId" class="btn btn-primary btn-lg float-right"><span class="fas fa-hand-paper"></span> Hold</a>
+                    <a asp-action="Higher"
+                       asp-route-gamePlayId="@Model.GamePlay?.GamePlayId" 
+                       asp-route-showingCardId="@Model.GamePlay?.CurrentTurn.FlippedCardId" class="btn btn-success btn-lg"><span class="fas fa-arrow-up"></span> Higher</a>
+                </div>
             </div>
         </div>
+        <div class="col">
+            <h2 class="text-center">Guesses Made</h2>
+            <table class="table table-striped table-bordered">
+                <tr class="text-center">
+                    <th>Turn</th>
+                    <th>Showing Card</th>
+                    <th>Flipped Card</th>
+                    <th>Guess</th>
+                    <th>Action</th>
+                    <th>Result</th>
+                </tr>
+                @foreach(var turn in Model.GamePlay.Turns)
+                {
+                    <tr>
+                        <td>@turn.Turn.Order</td>
+                        <td>@turn.Turn.ShowingCard?.Description</td>
+                        <td>@turn.Turn.FlippedCard?.Description</td>
+                        <td>@turn.Turn.GuessType?.Description</td>
+                        <td>@turn.Turn.ActionType?.Description</td>
+                        <td>@turn.Turn.Result</td>
+                    </tr>
+                }
+            </table>
+        </div>
     </div>
-    <div class="col">
-        <h2 class="text-center">Guesses Made</h2>
-        <table class="table table-striped table-bordered">
-            <tr class="text-center">
-                <th>Turn</th>
-                <th>Showing Card</th>
-                <th>Flipped Card</th>
-                <th>Guess</th>
-                <th>Result</th>
-            </tr>
-        </table>
-    </div>
-</div>
+}

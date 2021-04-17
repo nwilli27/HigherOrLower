@@ -41,8 +41,8 @@ namespace HigherOrLower.Models
 
 		private void buildConstaints(ModelBuilder builder)
 		{
-			builder.Entity<Turn>().HasOne(t => t.ShowingCard).WithMany().HasForeignKey(c => c.ShowingCardId).OnDelete(DeleteBehavior.Restrict);
-			builder.Entity<Turn>().HasOne(t => t.FlippedCard).WithMany().HasForeignKey(c => c.FlippedCardId).OnDelete(DeleteBehavior.Restrict);
+			builder.Entity<Turn>().HasOne(t => t.ShowingCard).WithMany().OnDelete(DeleteBehavior.Restrict);
+			builder.Entity<Turn>().HasOne(t => t.FlippedCard).WithMany().OnDelete(DeleteBehavior.Restrict);
 			builder.Entity<Turn>().HasOne(t => t.ActionType).WithMany().HasForeignKey(t => t.ActionTypeId).OnDelete(DeleteBehavior.Restrict);
 			builder.Entity<Turn>().HasOne(t => t.GuessType).WithMany().HasForeignKey(t => t.GuessTypeId).OnDelete(DeleteBehavior.Restrict);
 		}

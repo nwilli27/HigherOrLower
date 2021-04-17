@@ -12,9 +12,10 @@ namespace HigherOrLower.Models
 		public void Configure(EntityTypeBuilder<ActionType> builder)
 		{
 			builder.HasData(
-				new ActionType() { ActionTypeId = 1, Description = "Continue" },
-				new ActionType() { ActionTypeId = 2, Description = "Hold" },
-				new ActionType() { ActionTypeId = 3, Description = "Game Over" });
+				new ActionType() { ActionTypeId = 1, Description = "Start" },
+				new ActionType() { ActionTypeId = 2, Description = "Continue" },
+				new ActionType() { ActionTypeId = 3, Description = "Hold" },
+				new ActionType() { ActionTypeId = 4, Description = "Game Over" });
 		}
 	}
 }

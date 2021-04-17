@@ -10,14 +10,15 @@ namespace HigherOrLower.Models
 		public GamePlay GamePlay { get; set; }
 		public string GameStatus { get; set; }
 
-		public string GetPlayingCardImagePath(PlayingCard card)
+		public string GetPlayingCardImagePath(GamePlay gamePlay)
 		{
-			if (card != null)
-			{
-				return $"https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/{card.Suit.ToLower()}_{card.Type.ToLower()}.svg";
-			}
+			var card = gamePlay.CurrentTurn.HasHeld
+					 ? gamePlay.CurrentTurn.ShowingCard
+					 : gamePlay.CurrentTurn.FlippedCard;
 
-			return string.Empty;
+			return card != null
+				 ? $"https://tekeye.uk/playing_cards/images/svg_playing_cards/fronts/{card.Suit.ToLower()}_{card.Type.ToLower()}.svg"
+				 : string.Empty;
 		}
 	}
 }
