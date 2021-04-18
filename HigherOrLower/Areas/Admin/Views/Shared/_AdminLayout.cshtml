@@ -1,0 +1,96 @@
+﻿@{
+    var area = ViewContext.RouteData.Values["area"]?.ToString() ?? string.Empty;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+    var current = $"{area}/{controller}/{action}";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Williams - @ViewData["Title"] - Higher or Lower</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha-long-hash_code" crossorigin="anonymous" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-2">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu"
+                    aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="container">
+                <div class="collapse navbar-collapse" id="menu">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item @Nav.Active("Admin/Game/Play", current)">
+                            <a class="nav-link" asp-action="Play" asp-controller="Game" asp-area="Admin">
+                                <span class="fas fa-play"></span>&nbsp;Admin Play
+                            </a>
+                        </li>
+                        <li class="nav-item @Nav.Active("/Scores/PersonalHighScores", current)">
+                            <a class="nav-link" asp-action="Play" asp-controller="Game" asp-area="">
+                                <span class="fas fa-play"></span>&nbsp;Normal Play
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ml-auto">
+
+                        @using Microsoft.AspNetCore.Identity
+                        @inject SignInManager<User> signInManager
+
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <form method="post" asp-action="LogOut" asp-controller="Account" asp-area="">
+                                    <span class="text-light">@User.Identity.Name</span>
+                                    <input type="submit" value="Log Out" class="btn btn-outline-light" />
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item @Nav.Active("/Account/Register", action)">
+                                <a asp-action="Register" asp-controller="Account"
+                                   asp-area="" class="nav-link">
+                                    <span class="fas fa-edit"></span>&nbsp;Register
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="Login" asp-controller="Account"
+                                   asp-area="" class="btn btn-outline-light">Log In</a>
+                            </li>
+                        }
+
+                        <li class="nav-item @Nav.Active("Admin/Game/Play", current)">
+                            <a class="nav-link" asp-action="Play" asp-controller="Game" asp-area="Admin">
+                                <span class="fas fa-cog"></span>&nbsp;Admin
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021 - Higher Or Lower
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
