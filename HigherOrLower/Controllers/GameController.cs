@@ -151,7 +151,7 @@ namespace HigherOrLower.Controllers
 		{
 			var gamePlay = this.getUserCurrentGamePlay().Result;
 
-			if (gamePlay != null && !gamePlay.IsGameOver)
+			if (gamePlay != null && !gamePlay.IsGameOver && gamePlay.Score > 0)
 			{
 				this.gamePlayDL.HandleHold(gamePlay.GamePlayId, gamePlay.CurrentTurn.ShowingCardId.Value);
 				await this.checkToUpdateUserHighScoreGame();
