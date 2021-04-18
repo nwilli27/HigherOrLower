@@ -1,0 +1,37 @@
+﻿@model IList<GamePlay>
+
+@{
+    ViewData["Title"] = "Global Scores";
+}
+
+@foreach (var game in Model)
+{
+    <div class="card mb-2 mt-4 p-3">
+        <div class="lead">
+            <strong>#@(Model.IndexOf(game) + 1)&nbsp; @game.User.UserName</strong>&nbsp; Score: <strong>@game.Score</strong>
+        </div>
+        <div class="table-wrapper border">
+            <table class="table table-striped table-bordered mt-1">
+                <tr class="text-center">
+                    <th>Turn</th>
+                    <th>Showing Card</th>
+                    <th>Flipped Card</th>
+                    <th>Guess</th>
+                    <th>Action</th>
+                    <th>Result</th>
+                </tr>
+                @foreach (var turn in game.Turns)
+                {
+                    <tr>
+                        <td>@turn.Turn.Order</td>
+                        <td>@turn.Turn.ShowingCard?.Description</td>
+                        <td>@turn.Turn.FlippedCard?.Description</td>
+                        <td>@turn.Turn.GuessType?.Description</td>
+                        <td>@turn.Turn.ActionType?.Description</td>
+                        <td>@turn.Turn.Result</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+}
