@@ -36,6 +36,7 @@ namespace HigherOrLower
 				options.Password.RequiredLength = 6;
 				options.Password.RequireNonAlphanumeric = false;
 				options.Password.RequireDigit = false;
+				options.Password.RequireUppercase = false;
 			}).AddEntityFrameworkStores<HigherOrLowerContext>()
 			  .AddDefaultTokenProviders();
 		}
@@ -57,10 +58,17 @@ namespace HigherOrLower
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapRazorPages();
+				endpoints.MapAreaControllerRoute(
+					name: "admin",
+					areaName: "Admin",
+					pattern: "Admin/{controller=Game}/{action=Index}/{id?}");
+
 				endpoints.MapControllerRoute(
 					name: "default",
 					pattern: "{controller=Game}/{Action=Index}/{id?}");
 			});
+
+			HigherOrLowerContext.CreateAdminUser(app.ApplicationServices).Wait();
 		}
 	}
 }

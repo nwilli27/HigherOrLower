@@ -14,5 +14,6 @@ namespace HigherOrLower.Models
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public int CurrentGamePlayId { get; set; }
+		public int HighScoreGamePlayId { get; set; }
 	}
 }

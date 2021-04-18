@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HigherOrLower.Migrations
 {
     [DbContext(typeof(HigherOrLowerContext))]
-    [Migration("20210417170539_initial")]
+    [Migration("20210418024713_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -568,6 +568,9 @@ namespace HigherOrLower.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HighScoreGamePlayId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");

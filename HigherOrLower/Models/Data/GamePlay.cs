@@ -18,13 +18,13 @@ namespace HigherOrLower.Models
 		public Turn CurrentTurn => this.Turns?.Last()?.Turn;
 		public bool IsGameOver => this.CurrentTurn.IsGameOver;
 
-		public int CurrentScore => this.Turns.Count(t => t.Turn.IsScoreable);
+		public int Score => this.CurrentTurn.HasHeld ? this.Turns.Count(t => t.Turn.IsScoreable) : 0;
 
 		public string GetGameStatus()
 		{
 			if (IsGameOver)
 			{
-				return $"Game Over - Final Score: {CurrentScore}";
+				return $"Game Over - Final Score: {Score}";
 			}
 			else
 			{

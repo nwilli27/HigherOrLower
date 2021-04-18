@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,23 +8,35 @@ namespace HigherOrLower.Models
 {
 	public class GamePlayDL
 	{
-		private readonly IHigherOrLowerDataAccessor data;
+		#region Members
 
-		public GamePlayDL(IHigherOrLowerDataAccessor data)
+		private readonly IHigherOrLowerDataAccessor data;
+		private readonly UserManager<User> userManager;
+
+		#endregion
+
+		#region Construction
+
+		public GamePlayDL(IHigherOrLowerDataAccessor data, UserManager<User> userManager)
 		{
 			this.data = data;
+			this.userManager = userManager;
 		}
 
-		public GamePlay GetUserCurrentGamePlay(int currentGamePlayId)
+		#endregion
+
+		#region Public Methods
+
+		public GamePlay GetGamePlay(int gamePlayId)
 		{
 			GamePlay gamePlay = null;
 
-			if (currentGamePlayId > 0)
+			if (gamePlayId > 0)
 			{
 				gamePlay = this.data.GamePlays.Get(new QueryOptions<GamePlay>()
 				{
 					Includes = "Turns.Turn",
-					Where = p => p.GamePlayId == currentGamePlayId
+					Where = p => p.GamePlayId == gamePlayId
 				});
 				foreach (var turn in gamePlay.Turns)
 				{
@@ -48,7 +61,26 @@ namespace HigherOrLower.Models
 			this.data.Save();
 
 			var initialTurn = gamePlay.GetInitialTurn();
-			initialTurn.FlippedCardId = new PlayingCardDL(data).GetNextShuffledCardNotAlreadyShown(gamePlay.GamePlayId).PlayingCardId;
+			initialTurn.FlippedCardId = new PlayingCardDL(data).PullNextRandomPlayingCard(gamePlay.GamePlayId).PlayingCardId;
+			this.data.Turns.Insert(initialTurn);
+			this.data.Save();
+
+			this.saveGamePlayTurn(gamePlay.GamePlayId, initialTurn.TurnId);
+
+			return gamePlay;
+		}
+
+		public GamePlay InitializeNewGamePlayForAdmin(User user)
+		{
+			var gamePlay = new GamePlay
+			{
+				UserId = user.Id
+			};
+			this.data.GamePlays.Insert(gamePlay);
+			this.data.Save();
+
+			var initialTurn = gamePlay.GetInitialTurn();
+			initialTurn.FlippedCardId = 1;
 			this.data.Turns.Insert(initialTurn);
 			this.data.Save();
 
@@ -59,16 +91,32 @@ namespace HigherOrLower.Models
 
 		public void HandleGuess(int gamePlayId, int showingCardId, bool guessedHigher)
 		{
-			var flippedCard = new PlayingCardDL(data).GetNextShuffledCardNotAlreadyShown(gamePlayId);
-			var showingCard = this.data.PlayingCards.Get(showingCardId);
+			var gamePlay = this.GetGamePlay(gamePlayId);
+			var totalPlayingCards = this.data.PlayingCards.List(new QueryOptions<PlayingCard>()).Count();
 
-			var nextTurn = guessedHigher
-						 ? this.getNextTurnBasedOnGuess(showingCard, flippedCard, gamePlayId, true)
-						 : this.getNextTurnBasedOnGuess(showingCard, flippedCard, gamePlayId, false);
-			this.data.Turns.Insert(nextTurn);
-			this.data.Save();
+			if (gamePlay.Turns.Count == totalPlayingCards)
+			{
+				this.HandleHold(gamePlayId, showingCardId);
+			}
+			else
+			{
+				var flippedCard = new PlayingCardDL(data).PullNextRandomPlayingCard(gamePlayId);
+				this.handleGuessWithFlippedCard(gamePlayId, showingCardId, guessedHigher, flippedCard);
+			}
+		}
 
-			this.saveGamePlayTurn(gamePlayId, nextTurn.TurnId);
+		public void HandleGuessForAdmin(int gamePlayId, int showingCardId, bool guessedHigher)
+		{
+			var flippedCard = this.data.PlayingCards.Get(showingCardId + 1);
+
+			if (flippedCard == null)
+			{
+				this.HandleHold(gamePlayId, showingCardId);
+			}
+			else
+			{
+				this.handleGuessWithFlippedCard(gamePlayId, showingCardId, guessedHigher, flippedCard);
+			}
 		}
 
 		public void HandleHold(int gamePlayId, int showingCardId)
@@ -87,7 +135,53 @@ namespace HigherOrLower.Models
 			this.saveGamePlayTurn(gamePlayId, nextTurn.TurnId);
 		}
 
+		public IList<GamePlay> GetUserHighScoreGames(User user, int topAmount)
+		{
+			var userGames = this.data.GamePlays.List(new QueryOptions<GamePlay>()
+			{
+				Includes = "Turns.Turn, Turns.Turn.ActionType",
+				Where = p => p.UserId == user.Id
+			});
+
+			var highScoreGames = new List<GamePlay>();
+			var userGamesOrdered = userGames.OrderByDescending(g => g.Score);
+
+			if (userGames.Count() >= topAmount)
+			{
+				highScoreGames = userGamesOrdered.Take(topAmount).ToList();
+			}
+			else
+			{
+				highScoreGames = userGamesOrdered.Take(userGames.Count()).ToList();
+			}
+
+			var highScoreGamesPopulated = new List<GamePlay>();
+			foreach(var game in highScoreGames)
+			{
+				if (game.Score > 0)
+				{
+					highScoreGamesPopulated.Add(this.GetGamePlay(game.GamePlayId));
+				}
+			}
+			return highScoreGamesPopulated;
+		}
+
+		#endregion
+
 		#region Private Helpers
+
+		private void handleGuessWithFlippedCard(int gamePlayId, int showingCardId, bool guessedHigher, PlayingCard flippedCard)
+		{
+			var showingCard = this.data.PlayingCards.Get(showingCardId);
+
+			var nextTurn = guessedHigher
+						 ? this.getNextTurnBasedOnGuess(showingCard, flippedCard, gamePlayId, true)
+						 : this.getNextTurnBasedOnGuess(showingCard, flippedCard, gamePlayId, false);
+			this.data.Turns.Insert(nextTurn);
+			this.data.Save();
+
+			this.saveGamePlayTurn(gamePlayId, nextTurn.TurnId);
+		}
 
 		private Turn getNextTurnBasedOnGuess(PlayingCard showingCard, PlayingCard flippedCard, int gamePlayId, bool guessedHigher)
 		{

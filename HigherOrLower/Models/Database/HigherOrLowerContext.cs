@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +54,31 @@ namespace HigherOrLower.Models
 			builder.ApplyConfiguration(new SeedPlayingCards());
 			builder.ApplyConfiguration(new SeedActionTypes());
 			builder.ApplyConfiguration(new SeedGuessTypes());
+		}
+
+		public static async Task CreateAdminUser(IServiceProvider serviceProvider)
+		{
+			var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+			var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+			var username = "admin";
+			var password = "password";
+			var roleName = "Admin";
+
+			if (await roleManager.FindByNameAsync(username) == null)
+			{
+				await roleManager.CreateAsync(new IdentityRole(roleName));
+			}
+
+			if (await userManager.FindByNameAsync(username) == null)
+			{
+				var user = new User { UserName = username };
+				var result = await userManager.CreateAsync(user, password);
+				if (result.Succeeded)
+				{
+					await userManager.AddToRoleAsync(user, roleName);
+				}
+			}
 		}
 	}
 }

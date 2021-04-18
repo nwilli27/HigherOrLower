@@ -20,7 +20,6 @@ namespace HigherOrLower.Controllers
 		private IHigherOrLowerDataAccessor data;
 		private IHttpContextAccessor httpCtxAccessor;
 		private readonly UserManager<User> userManager;
-		private readonly HigherOrLowerContext context;
 
 		private GamePlayDL gamePlayDL;
 
@@ -33,14 +32,13 @@ namespace HigherOrLower.Controllers
 		/// </summary>
 		/// <param name="dataAccessor">The data accessor.</param>
 		/// <param name="httpCtx">The HTTP CTX.</param>
-		public GameController(IHigherOrLowerDataAccessor dataAccessor, IHttpContextAccessor httpCtx, UserManager<User> userManager, HigherOrLowerContext context)
+		public GameController(IHigherOrLowerDataAccessor dataAccessor, IHttpContextAccessor httpCtx, UserManager<User> userManager)
 		{
 			this.data = dataAccessor;
 			this.httpCtxAccessor = httpCtx;
 			this.userManager = userManager;
-			this.context = context;
 
-			this.gamePlayDL = new GamePlayDL(dataAccessor);
+			this.gamePlayDL = new GamePlayDL(dataAccessor, userManager);
 		}
 
 		#endregion
@@ -49,7 +47,7 @@ namespace HigherOrLower.Controllers
 
 		public IActionResult Index() => RedirectToAction("Play");
 
-		public IActionResult PlayAsync()
+		public IActionResult Play()
 		{
 			var viewModel = new GamePlayViewModel()
 			{
@@ -60,34 +58,39 @@ namespace HigherOrLower.Controllers
 
 		public async Task<IActionResult> NewGame()
 		{
-			this.checkToEndPreviousGame();
+			await this.checkToEndPreviousGame();
 			await this.initializeNewGame();
 			return RedirectToAction("Play");
 		}
 
-		public IActionResult Lower(int gamePlayId, int showingCardId)
+		public async Task<IActionResult> Lower(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)
 			{
 				this.gamePlayDL.HandleGuess(gamePlayId, showingCardId, false);
+				await this.checkToUpdateUserHighScoreGame();
 			}
+
 			return RedirectToAction("Play");
 		}
 
-		public IActionResult Higher(int gamePlayId, int showingCardId)
+		public async Task<IActionResult> Higher(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)
 			{
 				this.gamePlayDL.HandleGuess(gamePlayId, showingCardId, true);
+				await this.checkToUpdateUserHighScoreGame();
 			}
+
 			return RedirectToAction("Play");
 		}
 
-		public IActionResult Hold(int gamePlayId, int showingCardId)
+		public async Task<IActionResult> Hold(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)
 			{
 				this.gamePlayDL.HandleHold(gamePlayId, showingCardId);
+				await this.checkToUpdateUserHighScoreGame();
 			}
 			return RedirectToAction("Play");
 		}
@@ -99,9 +102,9 @@ namespace HigherOrLower.Controllers
 		private async Task<GamePlay> getUserCurrentGamePlay()
 		{
 			var currentUser = await this.userManager.GetUserAsync(User);
-			var currentGamePlayId = currentUser.CurrentGamePlayId;
+			var currentGamePlayId = currentUser != null ? currentUser.CurrentGamePlayId : 0;
 
-			return this.gamePlayDL.GetUserCurrentGamePlay(currentGamePlayId);
+			return this.gamePlayDL.GetGamePlay(currentGamePlayId);
 		}
 
 		private async Task initializeNewGame()
@@ -113,13 +116,26 @@ namespace HigherOrLower.Controllers
 			await this.userManager.UpdateAsync(currentUser);
 		}
 
-		private void checkToEndPreviousGame()
+		private async Task checkToEndPreviousGame()
 		{
 			var gamePlay = this.getUserCurrentGamePlay().Result;
 
-			if (!gamePlay.IsGameOver)
+			if (gamePlay != null && !gamePlay.IsGameOver)
 			{
 				this.gamePlayDL.HandleHold(gamePlay.GamePlayId, gamePlay.CurrentTurn.ShowingCardId.Value);
+				await this.checkToUpdateUserHighScoreGame();
+			}
+		}
+
+		private async Task checkToUpdateUserHighScoreGame()
+		{
+			var user = await this.userManager.GetUserAsync(User);
+			var highScoreGames = this.gamePlayDL.GetUserHighScoreGames(user, 1);
+
+			if (highScoreGames.Count > 0)
+			{
+				user.HighScoreGamePlayId = highScoreGames.First().GamePlayId;
+				await this.userManager.UpdateAsync(user);
 			}
 		}
 

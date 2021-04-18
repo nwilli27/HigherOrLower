@@ -17,7 +17,7 @@ namespace HigherOrLower.Models
 		#region Constants
 
 		private const int StartingPlayingCardId = 1;
-		private const int EndingPlayingCardId = 52;
+		private const int EndingPlayingCardId = 53;
 
 		#endregion
 
@@ -32,7 +32,7 @@ namespace HigherOrLower.Models
 
 		#region Methods
 
-		public PlayingCard GetNextShuffledCardNotAlreadyShown(int gamePlayId)
+		public PlayingCard PullNextRandomPlayingCard(int gamePlayId)
 		{
 			PlayingCard nextPlayingCard = null;
 			var shownCards = this.data.GamePlays.Get(new QueryOptions<GamePlay>()
