@@ -9,7 +9,7 @@ namespace HigherOrLower.Models
 	/// Holds functionality for accessing a DB.
 	/// 
 	/// Author: Nolan Williams
-	/// Date:	4/3/2021
+	/// Date:	4/18/2021
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public interface IRepository<T> where T : class

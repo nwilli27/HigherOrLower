@@ -11,6 +11,13 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Areas.Admin.Controllers
 {
+	/// <summary>
+	/// Holds cations for the Admin game views
+	/// 
+	/// Author: Nolan Williams
+	/// Date:	4/18/2021
+	/// </summary>
+	/// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
 	[Authorize(Roles = "Admin")]
 	[Area("Admin")]
 	public class GameController : Controller
@@ -46,8 +53,16 @@ namespace HigherOrLower.Areas.Admin.Controllers
 
 		#region Actions
 
+		/// <summary>
+		/// Redirects to Play action
+		/// </summary>
+		/// <returns>Redirects to play action</returns>
 		public IActionResult Index() => RedirectToAction("Play");
 
+		/// <summary>
+		/// Returns the Play view
+		/// </summary>
+		/// <returns>The play view</returns>
 		public IActionResult Play()
 		{
 			var viewModel = new GamePlayViewModel()
@@ -57,6 +72,10 @@ namespace HigherOrLower.Areas.Admin.Controllers
 			return View(viewModel);
 		}
 
+		/// <summary>
+		/// Redirects to play view after updating game state for new game
+		/// </summary>
+		/// <returns>Redirect to Play action</returns>
 		public async Task<IActionResult> NewGame()
 		{
 			await this.checkToEndPreviousGame();
@@ -64,6 +83,12 @@ namespace HigherOrLower.Areas.Admin.Controllers
 			return RedirectToAction("Play");
 		}
 
+		/// <summary>
+		/// Redirects to play view after updating game state for lower guess
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <param name="showingCardId">The showing card identifier.</param>
+		/// <returns>Redirect to play view</returns>
 		public async Task<IActionResult> Lower(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)
@@ -75,6 +100,12 @@ namespace HigherOrLower.Areas.Admin.Controllers
 			return RedirectToAction("Play");
 		}
 
+		/// <summary>
+		/// Redirects to play view after updating game state for higher guess
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <param name="showingCardId">The showing card identifier.</param>
+		/// <returns>Redirect to play view</returns>
 		public async Task<IActionResult> Higher(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)
@@ -86,6 +117,12 @@ namespace HigherOrLower.Areas.Admin.Controllers
 			return RedirectToAction("Play");
 		}
 
+		/// <summary>
+		/// Redirects to play view after updating game state for hold
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <param name="showingCardId">The showing card identifier.</param>
+		/// <returns>Redirect to play view</returns>
 		public async Task<IActionResult> Hold(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)

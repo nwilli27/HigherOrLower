@@ -11,6 +11,13 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Controllers
 {
+	/// <summary>
+	/// Holds actions for Game views
+	/// 
+	/// Author: Nolan Williams
+	/// Date:	4/18/2021
+	/// </summary>
+	/// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
 	[Authorize]
 	public class GameController : Controller
 	{
@@ -45,8 +52,16 @@ namespace HigherOrLower.Controllers
 
 		#region Actions
 
+		/// <summary>
+		/// Redirects to Play action
+		/// </summary>
+		/// <returns>Redirect to play action</returns>
 		public IActionResult Index() => RedirectToAction("Play");
 
+		/// <summary>
+		/// Returns the Play view
+		/// </summary>
+		/// <returns>The Play view</returns>
 		public IActionResult Play()
 		{
 			var viewModel = new GamePlayViewModel()
@@ -56,6 +71,10 @@ namespace HigherOrLower.Controllers
 			return View(viewModel);
 		}
 
+		/// <summary>
+		/// Redirects to play action after updating game state for new game
+		/// </summary>
+		/// <returns>Redirect to play action</returns>
 		public async Task<IActionResult> NewGame()
 		{
 			await this.checkToEndPreviousGame();
@@ -63,6 +82,10 @@ namespace HigherOrLower.Controllers
 			return RedirectToAction("Play");
 		}
 
+		/// <summary>
+		/// Redirects to play action after updating game state for lower guess
+		/// </summary>
+		/// <returns>Redirect to play action</returns>
 		public async Task<IActionResult> Lower(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)
@@ -74,6 +97,10 @@ namespace HigherOrLower.Controllers
 			return RedirectToAction("Play");
 		}
 
+		/// <summary>
+		/// Redirects to play action after updating game state for higher guess
+		/// </summary>
+		/// <returns>Redirect to play action</returns>
 		public async Task<IActionResult> Higher(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)
@@ -85,6 +112,10 @@ namespace HigherOrLower.Controllers
 			return RedirectToAction("Play");
 		}
 
+		/// <summary>
+		/// Redirects to play action after updating game state for hold
+		/// </summary>
+		/// <returns>Redirect to play action</returns>
 		public async Task<IActionResult> Hold(int gamePlayId, int showingCardId)
 		{
 			if (!this.getUserCurrentGamePlay().Result.IsGameOver)

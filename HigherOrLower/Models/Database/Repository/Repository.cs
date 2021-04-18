@@ -10,7 +10,7 @@ namespace HigherOrLower.Models
 	/// Holds functionality for a generic Entity DbSet.
 	/// 
 	/// Author: Nolan Williams
-	/// Date:	4/3/2021
+	/// Date:	4/18/2021
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public class Repository<T> : IRepository<T> where T : class

@@ -10,6 +10,13 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Controllers
 {
+	/// <summary>
+	/// Holds actions for Score views
+	/// 
+	/// Author: Nolan Williams
+	/// Date:	4/18/2021
+	/// </summary>
+	/// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
 	[Authorize]
 	public class ScoresController : Controller
 	{
@@ -25,6 +32,12 @@ namespace HigherOrLower.Controllers
 
 		#region Construction
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScoresController"/> class.
+		/// </summary>
+		/// <param name="dataAccessor">The data accessor.</param>
+		/// <param name="httpCtx">The HTTP CTX.</param>
+		/// <param name="userManager">The user manager.</param>
 		public ScoresController(IHigherOrLowerDataAccessor dataAccessor, IHttpContextAccessor httpCtx, UserManager<User> userManager)
 		{
 			this.data = dataAccessor;
@@ -38,8 +51,10 @@ namespace HigherOrLower.Controllers
 
 		#region Actions
 
-		public IActionResult Index() => RedirectToAction("HighScores");
-
+		/// <summary>
+		/// Returns Personal High scores view
+		/// </summary>
+		/// <returns>Return personal high score view</returns>
 		public async Task<IActionResult> PersonalHighScores()
 		{
 			var currentUser = await this.userManager.GetUserAsync(User);
@@ -47,6 +62,10 @@ namespace HigherOrLower.Controllers
 			return View(userHighScoreGames);
 		}
 
+		/// <summary>
+		/// Returns Global High scores view
+		/// </summary>
+		/// <returns>Return global high score view</returns>
 		public IActionResult GlobalHighScores()
 		{
 			var users = this.userManager.Users;

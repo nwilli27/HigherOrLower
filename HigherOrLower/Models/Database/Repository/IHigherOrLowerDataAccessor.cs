@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Models
 {
+	/// <summary>
+	/// Holds functionality for a data accessor
+	/// 
+	/// Author: Nolan Williams
+	/// Date:	4/18/2021
+	/// </summary>
 	public interface IHigherOrLowerDataAccessor
 	{
 

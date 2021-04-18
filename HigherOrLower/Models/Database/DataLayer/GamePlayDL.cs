@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Models
 {
+	/// <summary>
+	/// Holds abstracted functionality to interact with DB for a GamePlay
+	/// 
+	/// Author: Nolan Williams
+	/// Date:	4/18/2021
+	/// </summary>
 	public class GamePlayDL
 	{
 		#region Members
@@ -17,6 +23,11 @@ namespace HigherOrLower.Models
 
 		#region Construction
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GamePlayDL"/> class.
+		/// </summary>
+		/// <param name="data">The data.</param>
+		/// <param name="userManager">The user manager.</param>
 		public GamePlayDL(IHigherOrLowerDataAccessor data, UserManager<User> userManager)
 		{
 			this.data = data;
@@ -27,6 +38,11 @@ namespace HigherOrLower.Models
 
 		#region Public Methods
 
+		/// <summary>
+		/// Gets the game play.
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <returns>The game play populated based on the given [gamePlayId].</returns>
 		public GamePlay GetGamePlay(int gamePlayId)
 		{
 			GamePlay gamePlay = null;
@@ -51,6 +67,11 @@ namespace HigherOrLower.Models
 			return gamePlay;
 		}
 
+		/// <summary>
+		/// Initializes the new game play for a [user].
+		/// </summary>
+		/// <param name="user">The user.</param>
+		/// <returns>Returns the initialized game play for [user].</returns>
 		public GamePlay InitializeNewGamePlayFor(User user)
 		{
 			var gamePlay = new GamePlay
@@ -70,6 +91,11 @@ namespace HigherOrLower.Models
 			return gamePlay;
 		}
 
+		/// <summary>
+		/// Initializes the new game play for admin [user].
+		/// </summary>
+		/// <param name="user">The user.</param>
+		/// <returns>Gameplay that is initialized for [user].</returns>
 		public GamePlay InitializeNewGamePlayForAdmin(User user)
 		{
 			var gamePlay = new GamePlay
@@ -89,6 +115,12 @@ namespace HigherOrLower.Models
 			return gamePlay;
 		}
 
+		/// <summary>
+		/// Handles the user guess and updates the game state.
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <param name="showingCardId">The showing card identifier.</param>
+		/// <param name="guessedHigher">if set to <c>true</c> [guessed higher].</param>
 		public void HandleGuess(int gamePlayId, int showingCardId, bool guessedHigher)
 		{
 			var gamePlay = this.GetGamePlay(gamePlayId);
@@ -105,6 +137,12 @@ namespace HigherOrLower.Models
 			}
 		}
 
+		/// <summary>
+		/// Handles the guess for admin and updates the game state.
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <param name="showingCardId">The showing card identifier.</param>
+		/// <param name="guessedHigher">if set to <c>true</c> [guessed higher].</param>
 		public void HandleGuessForAdmin(int gamePlayId, int showingCardId, bool guessedHigher)
 		{
 			var flippedCard = this.data.PlayingCards.Get(showingCardId + 1);
@@ -119,6 +157,11 @@ namespace HigherOrLower.Models
 			}
 		}
 
+		/// <summary>
+		/// Handles the hold and updates the game state
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <param name="showingCardId">The showing card identifier.</param>
 		public void HandleHold(int gamePlayId, int showingCardId)
 		{
 			var showingCard = this.data.PlayingCards.Get(showingCardId);
@@ -135,6 +178,12 @@ namespace HigherOrLower.Models
 			this.saveGamePlayTurn(gamePlayId, nextTurn.TurnId);
 		}
 
+		/// <summary>
+		/// Gets the user high score games.
+		/// </summary>
+		/// <param name="user">The user.</param>
+		/// <param name="topAmount">The top amount.</param>
+		/// <returns></returns>
 		public IList<GamePlay> GetUserHighScoreGames(User user, int topAmount)
 		{
 			var userGames = this.data.GamePlays.List(new QueryOptions<GamePlay>()

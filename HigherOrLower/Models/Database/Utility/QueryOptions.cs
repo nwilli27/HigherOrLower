@@ -10,7 +10,7 @@ namespace HigherOrLower.Models
 	/// Holds functionality for a Query
 	/// 
 	/// Author: Nolan Williams
-	/// Date:   4/7/2021
+	/// Date:   4/18/2021
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public class QueryOptions<T>

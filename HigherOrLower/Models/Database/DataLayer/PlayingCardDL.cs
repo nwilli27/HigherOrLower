@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace HigherOrLower.Models
 {
+	/// <summary>
+	/// Holds abstracted functionality for interacting with PlayingCards in the DB
+	/// </summary>
 	public class PlayingCardDL
 	{
 		#region Members
@@ -23,6 +26,10 @@ namespace HigherOrLower.Models
 
 		#region Construction
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PlayingCardDL"/> class.
+		/// </summary>
+		/// <param name="data">The data.</param>
 		public PlayingCardDL(IHigherOrLowerDataAccessor data)
 		{
 			this.data = data;
@@ -32,6 +39,11 @@ namespace HigherOrLower.Models
 
 		#region Methods
 
+		/// <summary>
+		/// Pulls the next random playing card.
+		/// </summary>
+		/// <param name="gamePlayId">The game play identifier.</param>
+		/// <returns>Finds and returns the next available playing card.</returns>
 		public PlayingCard PullNextRandomPlayingCard(int gamePlayId)
 		{
 			PlayingCard nextPlayingCard = null;
